@@ -1,6 +1,7 @@
 import pygame
 from card import Card
 from deck import Deck
+from dictionary import WORDS
  
 class Game:
     DISCARD = (140, 30)
@@ -8,8 +9,8 @@ class Game:
     def __init__(self):
         pygame.init()
         # load and set the logo
-        #logo = pygame.image.load("logo32x32.png")
-        #pygame.display.set_icon(logo)
+        logo = pygame.image.load("icon.png")
+        pygame.display.set_icon(logo)
         pygame.display.set_caption("Quiddler")
 
         self.clock = pygame.time.Clock()
@@ -24,7 +25,7 @@ class Game:
 
     def setup(self):
         self.deck = Deck() # deck constructor creates the quiddler deck
-        self.hand = self.deck.draw(5) # first hand is 3 cards
+        self.hand = self.deck.draw(3) # first hand is 3 cards
         self.discard = self.deck.draw(1)
         for card in self.discard:
             card.bring_to_top()
@@ -143,11 +144,21 @@ class Game:
                         word.remove(card)
                     if len(word) == 0:
                         self.word_stacks.remove(word)
-            else:
+            elif self.mode == "drag":
                 self.mode = "discard"
         elif event.key == pygame.K_RETURN:
             if self.mode == "draw":
-                print("trying to go out with ", self.word_stacks)
+                words = ["".join([card.letter for card in word]).lower() for word in self.word_stacks]
+                print("trying to go out with ", words)
+                for word in words:
+                    if len(word) <= 1:
+                        print(word, "is invalid")
+                        continue
+                    if word not in WORDS:
+                        print(word, "is invalid")
+                        continue
+                    print(word, "is valid")
+
 
     # main game function
     def run(self):
